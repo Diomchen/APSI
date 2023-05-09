@@ -56,6 +56,7 @@ namespace apsi {
             }
         }
 
+        int i=1;
         void ZMQSenderDispatcher::run(const atomic<bool> &stop, int port)
         {
             ZMQSenderChannel chl;
@@ -98,6 +99,8 @@ namespace apsi {
                 case SenderOperationType::sop_query:
                     APSI_LOG_INFO("Received query");
                     dispatch_query(move(sop), chl);
+                    cout<<"===>send rec times:"<<i<<endl;
+                    i++;
                     break;
 
                 default:

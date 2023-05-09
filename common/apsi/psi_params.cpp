@@ -147,19 +147,24 @@ namespace apsi {
         }
 
         // Compute the bit-length of an item
+        // log2(plain_modulus) - 1 向上取整
+        
         item_bit_count_per_felt_ =
             static_cast<uint32_t>(seal_params_.plain_modulus().bit_count() - 1);
+        cout<<"计算(向上取整) item_bit_count_per_felt_ = log2(plain_modulus) -1 = "<<item_bit_count_per_felt_<<endl;
         item_bit_count_ = item_bit_count_per_felt_ * item_params_.felts_per_item;
 
-        if (item_bit_count_ < item_bit_count_min || item_bit_count_ > item_bit_count_max) {
-            throw invalid_argument("parameters result in too large or too small item_bit_count");
-        }
+        // 限制
+        // if (item_bit_count_ < item_bit_count_min || item_bit_count_ > item_bit_count_max) {
+        //     throw invalid_argument("parameters result in too large or too small item_bit_count");
+        // }
 
         // Compute how many items fit into a bundle. If felts_per_item is not a power of two, then
         // we will simply leave a few of the batching slots unused instead of splitting items across
         // multiple SEAL batches.
         items_per_bundle_ =
             static_cast<uint32_t>(seal_params_.poly_modulus_degree()) / item_params_.felts_per_item;
+        cout<<"每个 Bin Bundle 所含 Item 数量(纵向)：items_per_bundle_ = "<<items_per_bundle_<<endl;
 
         // Can we fit even one item into the SEAL ciphertext?
         if (!items_per_bundle_) {
@@ -168,6 +173,7 @@ namespace apsi {
 
         // Compute bins_per_bundle
         bins_per_bundle_ = items_per_bundle_ * item_params_.felts_per_item;
+        cout<<"每个桶所含的插槽数（横向）（bins_per_bundle_ = items_per_bundle_ * item_params_.felts_per_item ="<<bins_per_bundle_<<endl;
 
         // table_size must be a multiple of items_per_bundle_
         if (table_params_.table_size % items_per_bundle_) {

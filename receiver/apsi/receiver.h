@@ -191,6 +191,10 @@ namespace apsi {
             std::pair<Request, IndexTranslationTable> create_query(
                 const std::vector<HashedItem> &items);
 
+            std::vector<MatchRecord> send_query_1(const std::vector<HashedItem> &items,
+                const std::vector<LabelKey> &label_keys,
+                network::NetworkChannel &chl);
+
             /**
             Processes a ResultPart object and returns a vector of MatchRecords in the same order as
             the original vector of OPRF hashed items used to create the query. The return value

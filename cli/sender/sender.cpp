@@ -148,6 +148,7 @@ int start_sender(const CLP &cmd)
     // Try loading first as a SenderDB, then as a CSV file
     shared_ptr<SenderDB> sender_db;
     OPRFKey oprf_key;
+
     if (!(sender_db = try_load_sender_db(cmd, oprf_key)) &&
         !(sender_db = try_load_csv_db(cmd, oprf_key))) {
         APSI_LOG_ERROR("Failed to create SenderDB: terminating");
@@ -224,6 +225,7 @@ shared_ptr<SenderDB> create_sender_db(
             return nullptr;
         }
     } else if (holds_alternative<CSVReader::LabeledData>(db_data)) {
+        cout<<"Labeled Data 数据库生成："<<endl;
         try {
             auto &labeled_db_data = get<CSVReader::LabeledData>(db_data);
 
@@ -236,6 +238,9 @@ shared_ptr<SenderDB> create_sender_db(
             sender_db =
                 make_shared<SenderDB>(*psi_params, label_byte_count, nonce_byte_count, compress);
             sender_db->set_data(labeled_db_data);
+            cout<<"db item_count:"<<sender_db->get_item_count()<<endl;
+            cout<<"label_byte_count: "<<label_byte_count<<endl;
+            cout<<"nonce_byte_count: "<<label_byte_count<<endl;
             APSI_LOG_INFO(
                 "Created labeled SenderDB with " << sender_db->get_item_count() << " items and "
                                                  << label_byte_count << "-byte labels ("

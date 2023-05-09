@@ -317,6 +317,8 @@ namespace apsi {
             return Bitstring(move(bit_buf), bit_count);
         }
 
+        bool flag = true;
+
         AlgItemLabel algebraize_item_label(
             const HashedItem &item,
             const EncryptedLabel &label,
@@ -354,6 +356,14 @@ namespace apsi {
 
                 // Append to the AlgItemLabel
                 ret.emplace_back(make_pair(alg_item[felt_item_idx], move(label_parts)));
+            }
+
+            if(flag){
+                cout<<"felts_per_item:"<<felts_per_item<<endl;
+                cout<<"label_size:"<<label_size<<endl;
+                cout<<"alg_label:"<<alg_label.size()<<endl;
+                cout<<"alg_label_padded_size:"<<alg_label_padded_size<<endl;
+                flag = false;
             }
 
             return ret;

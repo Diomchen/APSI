@@ -245,6 +245,9 @@ namespace apsi {
             // cuckoo_hashing
             {
                 STOPWATCH(recv_stopwatch, "Receiver::create_query::cuckoo_hashing");
+                cout<<"Inserting " << items.size() << " items into cuckoo table of size "
+                                 << cuckoo.table_size() << " with " << cuckoo.loc_func_count()
+                                 << " hash functions"<< endl;
                 APSI_LOG_DEBUG(
                     "Inserting " << items.size() << " items into cuckoo table of size "
                                  << cuckoo.table_size() << " with " << cuckoo.loc_func_count()
@@ -291,6 +294,7 @@ namespace apsi {
             // prepare_data
             {
                 STOPWATCH(recv_stopwatch, "Receiver::create_query::prepare_data");
+                cout<<"bundle_idx_count:"<<params_.bundle_idx_count()<<endl;
                 for (uint32_t bundle_idx = 0; bundle_idx < params_.bundle_idx_count();
                      bundle_idx++) {
                     APSI_LOG_DEBUG("Preparing data for bundle index " << bundle_idx);
@@ -314,6 +318,8 @@ namespace apsi {
                             bits_to_field_elts(item_bits, params_.seal_params().plain_modulus());
                         copy(alg_item.cbegin(), alg_item.cend(), back_inserter(alg_items));
                     }
+                    
+                    cout<<"alg_items size:"<<alg_items.size()<<endl;
 
                     // Now that we have the algebraized items for this bundle index, we create a
                     // PlaintextPowers object that computes all necessary powers of the algebraized
@@ -360,9 +366,35 @@ namespace apsi {
             const vector<LabelKey> &label_keys,
             NetworkChannel &chl)
         {
-            ThreadPoolMgr tpm;
+
+            vector<MatchRecord> mrs;
 
             // Create query and send to Sender
+            // 如果hash 函数选择为1，那么则一个个传输
+            if(params_.table_params().hash_func_count < 1){
+                for(uint32_t k=0 ; k<items.size() ; k++){
+                    vector<HashedItem> temp_item_vec;
+                    vector<LabelKey> temp_label_key;
+                    temp_item_vec.push_back(items[k]);
+                    temp_label_key.push_back(label_keys[k]);
+
+                    auto mrs_item = send_query_1(temp_item_vec, temp_label_key, chl);
+                    
+                    mrs.insert(mrs.end(), mrs_item.begin(), mrs_item.end());
+                }
+            }
+            else{
+                mrs = send_query_1(items, label_keys, chl);
+            }
+            return mrs;
+        }
+
+        vector<MatchRecord> Receiver::send_query_1(const vector<HashedItem> &items,            
+            const vector<LabelKey> &label_keys,
+            NetworkChannel &chl){
+            ThreadPoolMgr tpm;
+            
+            
             auto query = create_query(items);
             chl.send(move(query.first));
             auto itt = move(query.second);

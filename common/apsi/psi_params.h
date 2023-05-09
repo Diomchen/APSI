@@ -77,6 +77,8 @@ namespace apsi {
             sent from the receiver to the sender, but reduces the number of ciphertexts sent from
             the sender to the receiver.
             */
+
+            // s 方每个 hash bin 对 item 容量
             std::uint32_t max_items_per_bin;
 
             /**
@@ -96,6 +98,7 @@ namespace apsi {
             Next, the matching and label polynomials will be evaluated using the Paterson-Stockmeyer
             algorithm. This number cannot exceed max_items_per_bin.
             */
+            // ps 算法中 degree 跨度
             std::uint32_t ps_low_degree = 0;
 
             /**
@@ -106,6 +109,7 @@ namespace apsi {
             computation requiring smaller encryption parameters, and may subsequently reduce both
             the computation and communication cost.
             */
+            // 大于 ps_low_degree + 1 但是小于 max_items_per_bin。 预计算。
             std::set<std::uint32_t> query_powers;
         };
 
@@ -177,6 +181,9 @@ namespace apsi {
         */
         double log2_fpp() const
         {
+            std::cout<<"每个 slot 所占 bit 位（item_bit_count_per_felt_）:"<<item_bit_count_per_felt_<<std::endl;
+            std::cout<<"一个 Bin Bundle 中 Item 最大容量（横向)（table_params_.max_items_per_bin）:"<<table_params_.max_items_per_bin<<std::endl;
+            std::cout<<"一个 Item 需要消耗 slot（item_params_.felts_per_item）:"<<item_params_.felts_per_item<<std::endl;
             return std::min<double>(
                 0.0,
                 (-static_cast<double>(item_bit_count_per_felt_) +

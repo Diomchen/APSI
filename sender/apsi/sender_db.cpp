@@ -123,6 +123,7 @@ namespace apsi {
                     AlgItemLabel alg_item_label = algebraize_item_label(
                         item, label, item_bit_count, params.seal_params().plain_modulus());
 
+
                     // Get the cuckoo table locations for this item and add to data_with_indices
                     for (auto location : all_locations(hash_funcs, item)) {
                         // The current hash value is an index into a table of Items. In reality our
@@ -769,6 +770,7 @@ namespace apsi {
             // Lock the database for writing
             auto lock = get_writer_lock();
 
+            // 这里得保证不插入重复的
             // We need to know which items are new and which are old, since we have to tell
             // dispatch_insert_or_assign when to have an overwrite-on-collision versus
             // add-binbundle-on-collision policy.
