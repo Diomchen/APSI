@@ -22,6 +22,7 @@
 #include "common/common_utils.h"
 #include "common/csv_reader.h"
 #include "receiver/clp.h"
+#include <chrono>
 
 using namespace std;
 #if defined(__GNUC__) && (__GNUC__ < 8) && !defined(__clang__)
@@ -136,6 +137,8 @@ int remote_query(const CLP &cmd)
     }
 
     print_intersection_results(orig_items, items_vec, query_result, cmd.output_file());
+    std::chrono::milliseconds end_receive_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
+    cout<<"===>receiver 请求结束处理时间："<<end_receive_time.count()<<endl;
     print_transmitted_data(channel);
     print_timing_report(recv_stopwatch);
 

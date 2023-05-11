@@ -226,7 +226,7 @@ namespace apsi {
 
         pair<Request, IndexTranslationTable> Receiver::create_query(const vector<HashedItem> &items)
         {
-            APSI_LOG_INFO("Creating encrypted query for " << items.size() << " items");
+            // APSI_LOG_INFO("Creating encrypted query for " << items.size() << " items");
             STOPWATCH(recv_stopwatch, "Receiver::create_query");
 
             IndexTranslationTable itt;
@@ -245,13 +245,13 @@ namespace apsi {
             // cuckoo_hashing
             {
                 STOPWATCH(recv_stopwatch, "Receiver::create_query::cuckoo_hashing");
-                cout<<"Inserting " << items.size() << " items into cuckoo table of size "
-                                 << cuckoo.table_size() << " with " << cuckoo.loc_func_count()
-                                 << " hash functions"<< endl;
-                APSI_LOG_DEBUG(
-                    "Inserting " << items.size() << " items into cuckoo table of size "
-                                 << cuckoo.table_size() << " with " << cuckoo.loc_func_count()
-                                 << " hash functions");
+                // cout<<"Inserting " << items.size() << " items into cuckoo table of size "
+                //                  << cuckoo.table_size() << " with " << cuckoo.loc_func_count()
+                //                  << " hash functions"<< endl;
+                // APSI_LOG_DEBUG(
+                //     "Inserting " << items.size() << " items into cuckoo table of size "
+                //                  << cuckoo.table_size() << " with " << cuckoo.loc_func_count()
+                //                  << " hash functions");
                 for (size_t item_idx = 0; item_idx < items.size(); item_idx++) {
                     const auto &item = items[item_idx];
                     if (!cuckoo.insert(item.get_as<kuku::item_type>().front())) {
@@ -294,7 +294,7 @@ namespace apsi {
             // prepare_data
             {
                 STOPWATCH(recv_stopwatch, "Receiver::create_query::prepare_data");
-                cout<<"bundle_idx_count:"<<params_.bundle_idx_count()<<endl;
+                // cout<<"bundle_idx_count:"<<params_.bundle_idx_count()<<endl;
                 for (uint32_t bundle_idx = 0; bundle_idx < params_.bundle_idx_count();
                      bundle_idx++) {
                     APSI_LOG_DEBUG("Preparing data for bundle index " << bundle_idx);
@@ -319,7 +319,7 @@ namespace apsi {
                         copy(alg_item.cbegin(), alg_item.cend(), back_inserter(alg_items));
                     }
                     
-                    cout<<"alg_items size:"<<alg_items.size()<<endl;
+                    // cout<<"alg_items size:"<<alg_items.size()<<endl;
 
                     // Now that we have the algebraized items for this bundle index, we create a
                     // PlaintextPowers object that computes all necessary powers of the algebraized
@@ -356,7 +356,7 @@ namespace apsi {
             sop_query->data = move(encrypted_powers);
             auto sop = to_request(move(sop_query));
 
-            APSI_LOG_INFO("Finished creating encrypted query");
+            // APSI_LOG_INFO("Finished creating encrypted query");
 
             return { move(sop), itt };
         }
@@ -371,7 +371,7 @@ namespace apsi {
 
             // Create query and send to Sender
             // 如果hash 函数选择为1，那么则一个个传输
-            if(params_.table_params().hash_func_count < 1){
+            if(params_.table_params().hash_func_count == 1){
                 for(uint32_t k=0 ; k<items.size() ; k++){
                     vector<HashedItem> temp_item_vec;
                     vector<LabelKey> temp_label_key;

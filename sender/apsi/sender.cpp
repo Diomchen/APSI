@@ -129,9 +129,9 @@ namespace apsi {
             auto sender_db_lock = sender_db->get_reader_lock();
 
             STOPWATCH(sender_stopwatch, "Sender::RunQuery");
-            APSI_LOG_INFO(
-                "Start processing query request on database with " << sender_db->get_item_count()
-                                                                   << " items");
+            // APSI_LOG_INFO(
+            //     "Start processing query request on database with " << sender_db->get_item_count()
+            //                                                        << " items");
 
             // Copy over the CryptoContext from SenderDB; set the Evaluator for this local instance.
             // Relinearization keys may not have been included in the query. In that case
@@ -232,7 +232,7 @@ namespace apsi {
                 f.get();
             }
 
-            APSI_LOG_INFO("Finished processing query request");
+            // APSI_LOG_INFO("Finished processing query request");
         }
 
         void Sender::ComputePowers(

@@ -137,7 +137,10 @@ bool try_save_sender_db(const CLP &cmd, shared_ptr<SenderDB> sender_db, const OP
 }
 
 int start_sender(const CLP &cmd)
-{
+{   
+    std::chrono::milliseconds start_preprocess_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
+    cout<<"===>预处理开始时间："<<start_preprocess_time.count()<<endl;
+    
     ThreadPoolMgr::SetThreadCount(cmd.threads());
     APSI_LOG_INFO("Setting thread count to " << ThreadPoolMgr::GetThreadCount());
     signal(SIGINT, sigint_handler);

@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <thread>
+#include <chrono>
 
 // APSI
 #include "apsi/log.h"
@@ -56,7 +57,6 @@ namespace apsi {
             }
         }
 
-        int i=1;
         void ZMQSenderDispatcher::run(const atomic<bool> &stop, int port)
         {
             ZMQSenderChannel chl;
@@ -69,6 +69,9 @@ namespace apsi {
 
             auto seal_context = sender_db_->get_seal_context();
 
+            std::chrono::milliseconds end_preprocess_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
+            cout<<"===>预处理结束时间:"<<end_preprocess_time.count()<<endl;
+
             // Run until stopped
             bool logged_waiting = false;
             while (!stop) {
@@ -78,7 +81,7 @@ namespace apsi {
                         // We want to log 'Waiting' only once, even if we have to wait
                         // for several sleeps. And only once after processing a request as well.
                         logged_waiting = true;
-                        APSI_LOG_INFO("Waiting for request from Receiver");
+                        // APSI_LOG_INFO("Waiting for request from Receiver");
                     }
 
                     this_thread::sleep_for(50ms);
@@ -87,20 +90,23 @@ namespace apsi {
 
                 switch (sop->sop->type()) {
                 case SenderOperationType::sop_parms:
-                    APSI_LOG_INFO("Received parameter request");
+                    {
+                        std::chrono::milliseconds start_receive_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
+                        cout<<"===>receiver 请求开始处理时间:"<<start_receive_time.count()<<endl;
+                    }
+                
+                    // APSI_LOG_INFO("Received parameter request");
                     dispatch_parms(move(sop), chl);
                     break;
 
                 case SenderOperationType::sop_oprf:
-                    APSI_LOG_INFO("Received OPRF request");
+                    // APSI_LOG_INFO("Received OPRF request");
                     dispatch_oprf(move(sop), chl);
                     break;
 
                 case SenderOperationType::sop_query:
-                    APSI_LOG_INFO("Received query");
+                    // APSI_LOG_INFO("Received query");
                     dispatch_query(move(sop), chl);
-                    cout<<"===>send rec times:"<<i<<endl;
-                    i++;
                     break;
 
                 default:
